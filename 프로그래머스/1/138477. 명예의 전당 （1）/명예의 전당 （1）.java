@@ -1,33 +1,22 @@
-import java.util.Arrays;
+import java.util.*;
 
 class Solution {
-    public int[] solution(int k, int[] score) {
-        int[] topScore= Arrays.copyOfRange(score, 0, k); //명예의 전당
-        Arrays.sort(topScore); //반환 값이 없어서 초기화할 때 사용 X
-        int[] answer= new int[score.length]; //명예의 전당 중 최저 점수 담는 배열
+    public Integer[] solution(int k, int[] score) {
+        PriorityQueue<Integer> topScore = new PriorityQueue<>(); //오름차순 우선순위 (낮은 놈 우선)
+        Integer[] answer= new Integer[score.length];
         
-        int min= score[0];
-        answer[0]= min;
-        
-        //score == k
-        for(int i= 1; i < k; i++){//1~k-1 중 작은 놈 배열에 담기
-            if(i >= answer.length){
-                break;
+        //k가 score[]보다 많을 수 있음 (명예의 전당이 가수보다 많은 것 -> 다 상위권임)
+        //어쨌든 score를 다 돌긴 해야 함
+        for(int i= 0; i < score.length; i++){
+            if(topScore.size() < k){ //큐가 k보다 작으면 수행
+                topScore.offer(score[i]); 
+                answer[i]= topScore.peek(); //젤 작은 놈 삭제 않고 반환 (에러 X) 
+                continue;
+            } else if(topScore.peek() < score[i]){
+                topScore.offer(score[i]);
+                topScore.poll(); //젤 작은 놈 삭제 후 반환 (에러 X)
             }
-            if(min > score[i]){
-                min= score[i];
-            }
-            answer[i]= min;
-        }
-        if(score.length > k){
-            for(int i= k; i < score.length; i++){ //k == score 길이일 경우 안 돌아감 
-            //i >= k, 비교 시작 (명예의 전당 중 작은 점수보다 크면 넣기)
-            if(topScore[0] < score[i]){
-                topScore[0]= score[i];
-                Arrays.sort(topScore); //또 정렬
-            }
-            answer[i]= topScore[0];
-            }  
+            answer[i]= topScore.peek();
         }
         return answer;
     }
